@@ -1,0 +1,12 @@
+variables:
+  PROJECT_ID: ''
+
+stages:
+  - cloud-functions-monorepo-template
+
+# CloudFunctionsによってトリガーがHTTPかEVENTか変わるため、CIを手動で追加する必要がある
+function-a:
+  stage: cloud-functions-monorepo-template
+  trigger:
+    include: functions/function-a/.gitlab-ci.yml
+    strategy: depend

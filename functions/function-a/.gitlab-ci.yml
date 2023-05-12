@@ -1,0 +1,45 @@
+variables:
+  FUNCTION_NAME: 'function-a'
+
+stages:
+  - build
+  - deploy
+
+# functions配下のファイルをbuildし、turbo prune でdeploy用ディレクトリを作成
+build:
+  stage: build
+  image: node:18.14
+  script:
+    - apt-get update && apt-get install -y jq
+    - npm ci
+    - npm run build
+    - npx turbo prune --scope=@functions/$FUNCTION_NAME --out-dir=build-function
+    - cp .gcloudignore ./build-function
+    - jq --arg deploy_function_name "$FUNCTION_NAME" '.main = "functions/" + $deploy_function_name + "/dist/src/index.js"' package.json > ./build-function/package.json
+  artifacts:
+    paths:
+      - build-function
+
+deploy:
+  stage: deploy
+  image: google/cloud-sdk
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  before_script:
+    - echo "set env"
+  script:
+    - echo $GCLOUD_SERVICE_KEY > gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+    - gcloud config set project $PROJECT_ID
+    - |
+      gcloud functions deploy $FUNCTION_NAME \
+        --source=build-function \
+        --entry-point=main \
+        --runtime=nodejs18 \
+        --verbosity=debug  \
+        --region=asia-northeast1 \
+        --trigger-http \
+        --set-env-vars GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
+  dependencies:
+    - build
+  when: manual

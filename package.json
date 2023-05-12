@@ -1,6 +1,7 @@
 {
   "name": "cloud-functions-monorepo-template",
   "version": "1.0.0",
+  "main": "",
   "license": "UNLICENSED",
   "private": true,
   "workspaces": [
