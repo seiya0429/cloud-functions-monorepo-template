@@ -1,20 +1,11 @@
 {
   "name": "@packages/common",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "devDependencies": {},
+  "private": true,
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/seiya0429/cloud-functions-monorepo-template.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/seiya0429/cloud-functions-monorepo-template/issues"
-  },
-  "homepage": "https://github.com/seiya0429/cloud-functions-monorepo-template#readme"
+    "build": "tsc --build",
+    "dev": "tsc -w"
+  }
 }
